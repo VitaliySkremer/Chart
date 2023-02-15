@@ -1,13 +1,14 @@
 import {useEffect, useRef} from "react";
 
 interface ChartProps {
-  nitMax:number;
+  nitMaxValue:number;
   nitValue:number;
-  forecastMax:number;
+  forecastMaxValue:number;
   forecastValue:number;
 }
 
-export const Chart = ({nitMax,nitValue,forecastMax,forecastValue}:ChartProps) => {
+export const Chart = ({nitMaxValue,nitValue,forecastMaxValue,forecastValue}:ChartProps) => {
+
   const refCanvas = useRef<HTMLCanvasElement | null>(null)
   const refWrapper = useRef<HTMLDivElement | null>(null)
 
@@ -46,15 +47,22 @@ export const Chart = ({nitMax,nitValue,forecastMax,forecastValue}:ChartProps) =>
       const height = refWrapper.current.offsetHeight;
       const width = refWrapper.current.offsetWidth;
 
-      refCanvas.current.width = width -4
-      refCanvas.current.height = height - 4
+      refCanvas.current.width = width
+      refCanvas.current.height = height
 
-      const nitPercent = Math.round(nitValue * 100 / nitMax)
-      const forecastPercent = Math.round(forecastValue * 100 / forecastMax)
+      const nit = nitValue > 0 && nitValue<999999 ? nitValue: 999999
+      const nitMax = nitMaxValue > 0 && nitMaxValue<999999 ? nitMaxValue: 999999
+      const forecast = forecastValue > 0 && forecastValue<999999 ? forecastValue: 999999
+      const forecastMax = forecastMaxValue > 0 && forecastMaxValue<999999 ? forecastMaxValue: 999999
+
+      let nitPercent = Math.round(nit * 100 / nitMax) > 100 ? 100: Math.round(nit * 100 / nitMax)
+      const forecastPercent = Math.round(forecast * 100 / forecastMax) > 100 ? 100 : Math.round(forecast * 100 / forecastMax)
+
       let nitPercentTemp = 0
       let forecastPercentTemp = 0
 
       function Animation(){
+
         ctx?.clearRect(0,0,width,height)
 
         let radianNit = 2*Math.PI*(nitPercentTemp - nitPercentTemp/100 * 25)/100;
@@ -74,9 +82,9 @@ export const Chart = ({nitMax,nitValue,forecastMax,forecastValue}:ChartProps) =>
         fillText(ctx,`${nitPercentTemp}%`,width/2, height/2, "black",width*0.07,'center', 'middle',true)
         fillText(ctx,`${forecastPercentTemp}%`,width-width/7.5, height/2, "black",width*0.04,'center', 'bottom',true)
 
-        const nitFormatNum = new Intl.NumberFormat('ru-RU').format(nitValue)
+        const nitFormatNum = new Intl.NumberFormat('ru-RU').format(nit)
         const nitFormatNumMax = new Intl.NumberFormat('ru-RU').format(nitMax)
-        const forecastFormatNum = new Intl.NumberFormat('ru-RU').format(forecastValue)
+        const forecastFormatNum = new Intl.NumberFormat('ru-RU').format(forecast)
         const forecastFormatNumMax = new Intl.NumberFormat('ru-RU').format(forecastMax)
 
         fillText(ctx,'НИТ',5.5*width/10, height*0.6, "black",width*0.03,'left', 'bottom',false)
@@ -96,7 +104,7 @@ export const Chart = ({nitMax,nitValue,forecastMax,forecastValue}:ChartProps) =>
       }
       requestAnimationFrame(Animation)
     }
-  },[nitMax,nitValue,forecastMax,forecastValue])
+  },[])
 
   return (
     <div ref={refWrapper} className='canvas'>

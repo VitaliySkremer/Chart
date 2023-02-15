@@ -6,9 +6,9 @@ function App() {
       <div className='wrapper'>
         <Chart
           nitValue={234840}
-          nitMax={246051}
+          nitMaxValue={246051}
           forecastValue={272289}
-          forecastMax={283500}
+          forecastMaxValue={283500}
         />
       </div>
     </div>
